@@ -1,0 +1,20 @@
+#!/usr/bin/env zsh
+
+while true; do
+  raw=$(osx-cpu-temp)
+  temp=$(echo "$raw" | grep -o '[0-9]*\.[0-9]*')
+
+  if (( $(echo "$temp < 55" | bc -l) )); then
+    color="\033[32m"      # green   — idle / ideal
+  elif (( $(echo "$temp < 85" | bc -l) )); then
+    color="\033[33m"      # yellow  — normal under load
+  elif (( $(echo "$temp < 95" | bc -l) )); then
+    color="\033[38;5;208m" # orange  — getting warm
+  else
+    color="\033[31m"      # red     — throttling territory
+  fi
+
+  reset="\033[0m"
+  printf "\r$(date '+%H:%M:%S') ${color}${raw}${reset}   "
+  sleep 5
+done
